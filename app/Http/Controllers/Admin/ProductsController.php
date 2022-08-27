@@ -13,7 +13,8 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        return view('admin/products/index');
+        $products = Product::with('categories')->paginate(5);
+        return view('admin/products/index', compact('products'));
     }
 
     /**
@@ -21,9 +22,7 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        $products = Product::with('categories')->paginate(5);
-
-        return view('admin/products/create', compact('products'));
+        return view('admin/products/create');
     }
 
     /**
