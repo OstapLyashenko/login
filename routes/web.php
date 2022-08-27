@@ -17,10 +17,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::name('admin')->prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+Route::name('admin.')->prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard', ['role' => 'Admin']);
-    })->name('.dashboard');
+    })->name('dashboard');
+
+    Route::resource('products', \App\Http\Controllers\Admin\ProductsController::class)->except(['show']);
 });
 
 Route::get('/dashboard', function () {
