@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\FileStorageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,7 +10,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable =[
+    protected $fillable = [
         'category_id',
         'title',
         'description',
@@ -37,4 +38,15 @@ class Product extends Model
             get: fn() => $this->attributes['in_stock'] > 0
         );
     }
+
+    public function setThumbnailAttribute($image)
+    {
+        if (!empty($this->attributes['thumbnail'])) {
+            FileStorageService::remove($this->attributes['thumbnail']);
+        }
+
+        $this->attributes['thumbnail'] = FileStorageService::upload($image);
+    }
+
+
 }
