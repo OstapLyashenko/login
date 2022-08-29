@@ -37,7 +37,6 @@ Route::post('cart/{product}', [\App\Http\Controllers\CartController::class, 'add
 Route::delete('cart', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
 Route::post('cart/{product}/count', [\App\Http\Controllers\CartController::class, 'countUpdate'])->name('cart.count.update');
 
-
 Route::name('admin.')->prefix('admin')->middleware(['auth', 'admin'])->group(function() {
     Route::get('/dashboard', function () {
         return view('dashboard', ['role' => 'Admin']);
@@ -45,3 +44,8 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'admin'])->group(fun
 
     Route::resource('products', \App\Http\Controllers\Admin\ProductsController::class)->except(['show']);
 });
+
+Route::middleware('auth')->group(function() {
+    Route::post('product/{product}/rating/add', [\App\Http\Controllers\ProductsController::class, 'addRating'])->name('product.rating.add');
+});
+

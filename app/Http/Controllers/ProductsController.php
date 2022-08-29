@@ -19,7 +19,14 @@ class HomeController extends Controller
     {
         $categories = Category::all()->take(2);
         $products = Product::all()->take(6);
+        $userRating = $product->getUserRating();
+        return view('products.show', compact('product', 'userRating'));
+    }
 
-        return view('home', compact('categories', 'products'));
+    public function addRating(Request $request, Product $product)
+    {
+        $product->rateOnce($request->get('star'));
+
+        return redirect()->back();
     }
 }
