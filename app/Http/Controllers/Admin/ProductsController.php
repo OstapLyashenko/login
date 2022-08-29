@@ -17,6 +17,7 @@ use \Illuminate\Http\Response;
 
 class ProductsController extends Controller
 {
+    public function __construct(protected ProductRepositoryContract $productRepository) {}
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
@@ -43,31 +44,18 @@ class ProductsController extends Controller
      */
     public function store(CreateProductRequest $request): RedirectResponse
     {
-        try {
-            DB::beginTransaction();
-
-            $data = $request->validated();
-            $images = $data['images'] ?? [];
-            $category = Category::find($data['category']);
-            $product = $category->products()->create($data); // category_id
-            ImagesService::attach($product, 'images', $images);
-
-            DB::commit();
-
-            return redirect()->route('admin.products.index')
-                ->with('status', "the product #{$product->id} was successfully created!");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            logs()->warning($e);
+        if ($product = $this->productRepository->create($request)) {
+            return redirect()->route('admin.products.index')->with('status', "The product #{$product->id} was successfully created!");
+        } else {
             return redirect()->back()->with('warn', 'Oops smth wrong. See logs')->withInput();
         }
     }
 
     /**
-     * @param  int  $id
+     * @param UpdateProductRequest $request
      * @param Product $product
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function edit(Product $product)
     {
@@ -78,10 +66,14 @@ class ProductsController extends Controller
     /**
      * @param UpdateProductRequest $request
      * @param Product $product
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        if ($this->productRepository->update($product, $request)) {
+            return redirect()->route('admin.products.index')->with('status', "The product #{$product->id} was successfully updated!");
+        } else {
+            return redirect()->back()->with('warn', 'Oops smth wrong. See logs')->withInput();
+        }
     }
 }

@@ -11,7 +11,7 @@ use Illuminate\Http\UploadedFile as UploadedFileAlias;
 class FileStorageService implements FileStorageServiceContract
 {
 
-    public static function upload(UploadedFileAlias|string $file): string
+    public static function upload(UploadedFileAlias|string|\GuzzleHttp\Psr7\UploadedFile $file): string
     {
         if(is_string($file)){
             return str_replace('public/storage', '', $file);
@@ -25,7 +25,7 @@ class FileStorageService implements FileStorageServiceContract
 
     public static function remove(string $file)
     {
-        // TODO: Implement remove() method.
+        Storage::delete($file);
     }
 
     protected static function randomName(): string
