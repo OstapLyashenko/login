@@ -7,7 +7,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class HomeController extends Controller
+class ProductsController extends Controller
 {
 
     /**
